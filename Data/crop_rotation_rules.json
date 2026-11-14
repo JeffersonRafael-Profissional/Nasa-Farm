@@ -1,0 +1,56 @@
+{
+  "rotation_rules_version": "1.0",
+  "knowledge_base_sources": ["FAO EcoCrop", "Iowa State University Extension", "USDA NRCS", "Embrapa"],
+  "rules": [
+    {
+      "rule_id": "RULE_01_LEGUME_N_CREDIT",
+      "predecessor": "soybean",
+      "successor": "corn_grain",
+      "effect_type": "synergy",
+      "fertilizer_saving_n_kg_ha": 40.0,
+      "yield_bonus_pct": 8.0,
+      "mechanism": "Biological N2 fixation by Bradyrhizobium leaves readily mineralizable residue with low C:N ratio (25:1)."
+    },
+    {
+      "rule_id": "RULE_02_CONTINUOUS_CORN_PENALTY",
+      "predecessor": "corn_grain",
+      "successor": "corn_grain",
+      "effect_type": "penalty",
+      "yield_penalty_pct": -12.0,
+      "additional_n_demand_kg_ha": 35.0,
+      "pest_risk_increase": ["Corn Rootworm", "Tar Spot", "Goss Wilt"],
+      "mechanism": "High C:N corn stover immobilizes soil nitrogen during early spring; persistent residue harbors fungal pathogens and rootworm egg banks."
+    },
+    {
+      "rule_id": "RULE_03_COVER_CROP_N_RETENTION",
+      "predecessor": "corn_grain",
+      "inter_season_cover": "cereal_rye_cover",
+      "successor": "soybean",
+      "effect_type": "synergy",
+      "nitrate_leaching_reduction_pct": 65.0,
+      "soil_erosion_reduction_pct": 82.0,
+      "soil_organic_matter_annual_gain_g_kg": 0.35,
+      "weed_suppression_pct": 75.0,
+      "mechanism": "Deep fibrous rye roots scavenge residual soil nitrates before spring rains leach them into tile drains; dense spring mulch suppresses waterhemp and marestail."
+    },
+    {
+      "rule_id": "RULE_04_COVER_CROP_TERMINATION_TIMING",
+      "cover_crop": "cereal_rye_cover",
+      "before_crop": "corn_grain",
+      "warning": "Terminate cereal rye at least 10-14 days prior to planting corn to prevent soil moisture depletion and nitrogen immobilization."
+    },
+    {
+      "rule_id": "RULE_05_PEST_BREAK_SCN",
+      "target_pest": "Soybean Cyst Nematode (Heterodera glycines)",
+      "management_rule": "Do not plant soybean consecutively. Rotating to corn, wheat, or non-host forages reduces egg population density by 30-50% per year."
+    },
+    {
+      "rule_id": "RULE_06_PERENNIAL_ALFALFA_CREDIT",
+      "predecessor": "alfalfa_perennial",
+      "successor": "corn_grain",
+      "fertilizer_saving_n_kg_ha": 120.0,
+      "soil_aggregation_improvement_pct": 35.0,
+      "mechanism": "Extensive perennial root channels improve deep water infiltration (NASA SMAP rootzone infiltration) and provide 1st-year corn with 100-150 kg N/ha."
+    }
+  ]
+}

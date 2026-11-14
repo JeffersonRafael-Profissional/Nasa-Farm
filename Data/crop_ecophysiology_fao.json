@@ -1,0 +1,202 @@
+[
+  {
+    "crop_id": "corn_grain",
+    "common_name": "Corn (Maize)",
+    "scientific_name": "Zea mays",
+    "crop_type": "Grain / C4 Grass",
+    "cycle_days": 120,
+    "planting_window_doy": [115, 140],
+    "harvest_window_doy": [265, 305],
+    "thermal_requirements": {
+      "t_base_c": 10.0,
+      "t_opt_min_c": 20.0,
+      "t_opt_max_c": 30.0,
+      "t_max_c": 38.0,
+      "gdd_required_c": 1400
+    },
+    "water_requirements": {
+      "seasonal_water_demand_mm": [500, 750],
+      "kc_initial": 0.35,
+      "kc_mid": 1.20,
+      "kc_end": 0.60,
+      "critical_stress_stage": "Tasseling / Silking (mid-season)",
+      "drought_tolerance": "Moderate",
+      "waterlogging_tolerance": "Low"
+    },
+    "soil_and_nutrient_impact": {
+      "n_requirement_kg_ha": 200,
+      "n_fixation": false,
+      "n_credit_leftover_kg_ha": 0,
+      "c_n_residue_ratio": 57,
+      "residue_biomass_t_ha": 8.5,
+      "erosion_protection_early": "Low",
+      "erosion_protection_mature": "High",
+      "root_depth_max_m": 1.6
+    },
+    "pest_disease_interactions": {
+      "host_of": ["Corn Rootworm (Diabrotica spp.)", "Tar Spot", "European Corn Borer"],
+      "non_host_of": ["Soybean Cyst Nematode (Heterodera glycines)"]
+    }
+  },
+  {
+    "crop_id": "soybean",
+    "common_name": "Soybean",
+    "scientific_name": "Glycine max",
+    "crop_type": "Legume / C3 Broadleaf",
+    "cycle_days": 115,
+    "planting_window_doy": [125, 150],
+    "harvest_window_doy": [260, 290],
+    "thermal_requirements": {
+      "t_base_c": 10.0,
+      "t_opt_min_c": 22.0,
+      "t_opt_max_c": 30.0,
+      "t_max_c": 35.0,
+      "gdd_required_c": 1300
+    },
+    "water_requirements": {
+      "seasonal_water_demand_mm": [450, 650],
+      "kc_initial": 0.40,
+      "kc_mid": 1.15,
+      "kc_end": 0.50,
+      "critical_stress_stage": "Pod fill (R4-R5)",
+      "drought_tolerance": "Moderate",
+      "waterlogging_tolerance": "Moderate"
+    },
+    "soil_and_nutrient_impact": {
+      "n_requirement_kg_ha": 0,
+      "n_fixation": true,
+      "n_credit_leftover_kg_ha": 35,
+      "c_n_residue_ratio": 25,
+      "residue_biomass_t_ha": 4.0,
+      "erosion_protection_early": "Low",
+      "erosion_protection_mature": "Medium",
+      "root_depth_max_m": 1.2
+    },
+    "pest_disease_interactions": {
+      "host_of": ["Soybean Cyst Nematode (SCN)", "Sudden Death Syndrome (SDS)", "White Mold"],
+      "non_host_of": ["Corn Rootworm"]
+    }
+  },
+  {
+    "crop_id": "cereal_rye_cover",
+    "common_name": "Cereal Rye (Cover Crop)",
+    "scientific_name": "Secale cereale",
+    "crop_type": "Cover Crop / Winter C3 Grass",
+    "cycle_days": 210,
+    "planting_window_doy": [260, 305],
+    "harvest_window_doy": [110, 130],
+    "thermal_requirements": {
+      "t_base_c": 1.0,
+      "t_opt_min_c": 15.0,
+      "t_opt_max_c": 22.0,
+      "t_max_c": 32.0,
+      "frost_tolerance_c": -32.0,
+      "gdd_required_c": 800
+    },
+    "water_requirements": {
+      "seasonal_water_demand_mm": [200, 350],
+      "kc_initial": 0.30,
+      "kc_mid": 1.05,
+      "kc_end": 0.40,
+      "critical_stress_stage": "Early spring greenup",
+      "drought_tolerance": "High",
+      "waterlogging_tolerance": "High"
+    },
+    "soil_and_nutrient_impact": {
+      "n_requirement_kg_ha": 30,
+      "n_fixation": false,
+      "n_scavenging_potential_kg_ha": 55,
+      "n_credit_leftover_kg_ha": 0,
+      "c_n_residue_ratio": 40,
+      "residue_biomass_t_ha": 3.8,
+      "erosion_protection_early": "High",
+      "erosion_protection_mature": "Very High",
+      "root_depth_max_m": 1.4
+    },
+    "pest_disease_interactions": {
+      "host_of": [],
+      "non_host_of": ["Soybean Cyst Nematode"],
+      "weed_suppression": "High (Allelopathy + shading)"
+    }
+  },
+  {
+    "crop_id": "winter_wheat",
+    "common_name": "Winter Wheat",
+    "scientific_name": "Triticum aestivum",
+    "crop_type": "Small Grain / Winter C3 Grass",
+    "cycle_days": 260,
+    "planting_window_doy": [265, 290],
+    "harvest_window_doy": [185, 205],
+    "thermal_requirements": {
+      "t_base_c": 0.0,
+      "t_opt_min_c": 15.0,
+      "t_opt_max_c": 24.0,
+      "t_max_c": 32.0,
+      "frost_tolerance_c": -25.0,
+      "gdd_required_c": 1600
+    },
+    "water_requirements": {
+      "seasonal_water_demand_mm": [450, 650],
+      "kc_initial": 0.30,
+      "kc_mid": 1.15,
+      "kc_end": 0.30,
+      "critical_stress_stage": "Anthesis / Flowering",
+      "drought_tolerance": "High",
+      "waterlogging_tolerance": "Low"
+    },
+    "soil_and_nutrient_impact": {
+      "n_requirement_kg_ha": 90,
+      "n_fixation": false,
+      "n_credit_leftover_kg_ha": 0,
+      "c_n_residue_ratio": 60,
+      "residue_biomass_t_ha": 5.2,
+      "erosion_protection_early": "High",
+      "erosion_protection_mature": "Very High",
+      "root_depth_max_m": 1.5
+    },
+    "pest_disease_interactions": {
+      "host_of": ["Fusarium Head Blight", "Rust"],
+      "non_host_of": ["Corn Rootworm", "Soybean Cyst Nematode"]
+    }
+  },
+  {
+    "crop_id": "alfalfa_perennial",
+    "common_name": "Alfalfa (Lucerne)",
+    "scientific_name": "Medicago sativa",
+    "crop_type": "Perennial Legume / Forage",
+    "cycle_days": 365,
+    "planting_window_doy": [95, 120],
+    "harvest_window_doy": [150, 270],
+    "thermal_requirements": {
+      "t_base_c": 5.0,
+      "t_opt_min_c": 20.0,
+      "t_opt_max_c": 28.0,
+      "t_max_c": 36.0,
+      "frost_tolerance_c": -28.0,
+      "gdd_required_c": 2200
+    },
+    "water_requirements": {
+      "seasonal_water_demand_mm": [700, 1100],
+      "kc_initial": 0.40,
+      "kc_mid": 1.20,
+      "kc_end": 0.85,
+      "critical_stress_stage": "Vegetative regrowth",
+      "drought_tolerance": "Very High (Deep taproot)",
+      "waterlogging_tolerance": "Very Low"
+    },
+    "soil_and_nutrient_impact": {
+      "n_requirement_kg_ha": 0,
+      "n_fixation": true,
+      "n_credit_leftover_kg_ha": 120,
+      "c_n_residue_ratio": 18,
+      "residue_biomass_t_ha": 9.0,
+      "erosion_protection_early": "High",
+      "erosion_protection_mature": "Maximum",
+      "root_depth_max_m": 3.0
+    },
+    "pest_disease_interactions": {
+      "host_of": ["Alfalfa Weevil"],
+      "non_host_of": ["Corn Rootworm", "Soybean Cyst Nematode"]
+    }
+  }
+]

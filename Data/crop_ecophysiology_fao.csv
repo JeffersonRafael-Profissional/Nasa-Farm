@@ -1,0 +1,6 @@
+crop_id,common_name,scientific_name,crop_type,cycle_days,planting_window_start,planting_window_end,harvest_window_start,harvest_window_end,t_base_c,t_opt_min_c,t_opt_max_c,t_max_c,water_demand_min_mm,water_demand_max_mm,kc_mid,n_requirement_kg_ha,n_fixation,n_credit_kg_ha,c_n_ratio,residue_biomass_t_ha,root_depth_max_m,erosion_protection
+corn_grain,Corn (Maize),Zea mays,Grain / C4 Grass,120,115,140,265,305,10.0,20.0,30.0,38.0,500,750,1.20,200,False,0,57,8.5,1.6,Medium
+soybean,Soybean,Glycine max,Legume / C3 Broadleaf,115,125,150,260,290,10.0,22.0,30.0,35.0,450,650,1.15,0,True,35,25,4.0,1.2,Low
+cereal_rye_cover,Cereal Rye (Cover),Secale cereale,Cover Crop / Winter C3,210,260,305,110,130,1.0,15.0,22.0,32.0,200,350,1.05,30,False,0,40,3.8,1.4,Very High
+winter_wheat,Winter Wheat,Triticum aestivum,Small Grain / Winter C3,260,265,290,185,205,0.0,15.0,24.0,32.0,450,650,1.15,90,False,0,60,5.2,1.5,Very High
+alfalfa_perennial,Alfalfa,Medicago sativa,Perennial Legume,365,95,120,150,270,5.0,20.0,28.0,36.0,700,1100,1.20,0,True,120,18,9.0,3.0,Maximum

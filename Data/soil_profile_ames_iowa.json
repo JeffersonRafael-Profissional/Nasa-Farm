@@ -1,0 +1,51 @@
+{
+  "location": {
+    "site_name": "Ames Agricultural Research Station, Iowa",
+    "county": "Story County",
+    "state": "Iowa",
+    "country": "USA",
+    "latitude": 42.0308,
+    "longitude": -93.6319,
+    "elevation_m": 298
+  },
+  "soil_taxonomy": {
+    "order": "Mollisols",
+    "suborder": "Udolls",
+    "great_group": "Hapludolls",
+    "soil_series": "Clarion loam (Typic Hapludolls)",
+    "drainage_class": "Well drained",
+    "hydrologic_soil_group": "B"
+  },
+  "physical_properties": {
+    "textural_class": "Loam",
+    "sand_fraction_pct": 38.0,
+    "silt_fraction_pct": 42.0,
+    "clay_fraction_pct": 20.0,
+    "bulk_density_g_cm3": 1.32,
+    "saturated_hydraulic_conductivity_mm_hr": 18.5,
+    "available_water_capacity_awc_cm_per_cm": 0.18,
+    "total_rootzone_awc_mm": 180.0,
+    "soil_depth_to_bedrock_cm": 150
+  },
+  "hydraulic_limits": {
+    "saturation_theta_sat_pct": 46.0,
+    "field_capacity_theta_fc_pct": 31.0,
+    "permanent_wilting_point_theta_pwp_pct": 13.0,
+    "readily_available_water_pct": 50.0
+  },
+  "chemical_and_fertility_properties": {
+    "ph_water": 6.4,
+    "soil_organic_matter_som_pct": 3.8,
+    "soil_organic_carbon_soc_g_kg": 22.0,
+    "cation_exchange_capacity_cec_cmol_kg": 22.5,
+    "bray_p1_phosphorus_ppm": 28.0,
+    "extractable_potassium_ppm": 165.0,
+    "c_n_soil_ratio": 11.2
+  },
+  "vulnerabilities": {
+    "wind_erodibility_index_t_acre_yr": 48,
+    "k_factor_water_erosion": 0.28,
+    "compaction_susceptibility": "Moderate",
+    "slaking_crusting_risk_when_bare": "High"
+  }
+}

@@ -1,0 +1,105 @@
+[
+  {
+    "scenario_id": "SCENARIO_A_MONOCULTURE",
+    "name": "Cenário 1: Monocultura Convencional (Milho Contínuo)",
+    "crop_sequence": ["Milho", "Milho", "Milho"],
+    "is_current_baseline": true,
+    "agronomic_rationale": "Manejo comum focado exclusivamente no mercado imediato de milho/etanol, sem inclusão de leguminosas ou culturas de cobertura no inverno.",
+    "metrics": {
+      "productivity_index": 78.5,
+      "estimated_grain_yield_t_ha_yr": 9.4,
+      "water_demand_mm_yr": 620.0,
+      "water_use_efficiency_kg_m3": 1.52,
+      "climate_risk_score_100": 74.0,
+      "soil_erosion_rate_t_ha_yr": 11.2,
+      "soil_organic_matter_trend_pct_10yr": -4.2,
+      "synthetic_n_fertilizer_kg_ha_yr": 220.0,
+      "bare_soil_days_per_year": 195,
+      "disease_pest_pressure_score_100": 82.0
+    },
+    "nasa_data_evidence": {
+      "smap_rootzone_observation": "Queda drástica de umidade radicular (sm_rootzone < 0.18 m³/m³) no pico de julho sem efeito amortecedor de palhada.",
+      "modis_ndvi_profile": "NDVI baixo (< 0.20) durante 6 meses (outubro a abril), indicando solo totalmente exposto à erosão eólica e hídrica.",
+      "ecostress_water_deficit": "Déficit hídrico acumulado de 145 mm durante o período crítico de florescimento/silking."
+    },
+    "benefits": [
+      "Operação com maquinário único e padronizado",
+      "Alta familiaridade de mercado e contratos futuros"
+    ],
+    "limitations_and_risks": [
+      "Alto custo com fertilizantes nitrogenados sintetizados",
+      "Resistência crescente de pragas (lagarta e crisomelídeos)",
+      "Degradação da estrutura física do solo e perda contínua de carbono"
+    ],
+    "local_validation_needs": "Necessidade de monitorar população de Nematoides e compactação do subsolo (hardpan)."
+  },
+  {
+    "scenario_id": "SCENARIO_B_STANDARD_ROTATION",
+    "name": "Cenário 2: Rotação Regional Padrão (Milho - Soja)",
+    "crop_sequence": ["Milho", "Soja", "Milho", "Soja"],
+    "is_current_baseline": false,
+    "agronomic_rationale": "Alternância bienal entre cereal e leguminosa. A soja fixa nitrogênio biologicamente e reduz o inóculo de pragas do milho, mas o resíduo de soja decompõe rápido demais.",
+    "metrics": {
+      "productivity_index": 88.0,
+      "estimated_grain_yield_t_ha_yr": 10.8,
+      "water_demand_mm_yr": 540.0,
+      "water_use_efficiency_kg_m3": 1.85,
+      "climate_risk_score_100": 48.0,
+      "soil_erosion_rate_t_ha_yr": 7.4,
+      "soil_organic_matter_trend_pct_10yr": +0.8,
+      "synthetic_n_fertilizer_kg_ha_yr": 130.0,
+      "bare_soil_days_per_year": 170,
+      "disease_pest_pressure_score_100": 45.0
+    },
+    "nasa_data_evidence": {
+      "smap_rootzone_observation": "Aproveitamento hídrico mais balanceado no perfil 0-100 cm devido à alternância de profundidade das raízes (1.2m vs 1.6m).",
+      "modis_ndvi_profile": "Picos de NDVI desfasados entre os anos; ainda apresenta cerca de 5 meses de solo desprotegido entre a colheita da soja e o plantio do milho.",
+      "ecostress_water_deficit": "Déficit hídrico moderado (92 mm)."
+    },
+    "benefits": [
+      "Economia média de 35 a 45 kg N/ha no milho após soja (crédito biológico)",
+      "Redução da pressão de lagartas e quebra de ciclo do nematoide do cisto",
+      "Diversificação de receita financeira do produtor"
+    ],
+    "limitations_and_risks": [
+      "Resíduo de soja deixa o solo vulnerável à erosão na primavera após o degelo",
+      "Lixiviação de nitratos ainda significativa em anos de chuvas intensas de outono/primavera"
+    ],
+    "local_validation_needs": "Validação de datas ideais de dessecação e umidade do leito de semente."
+  },
+  {
+    "scenario_id": "SCENARIO_C_CLIMATE_RESILIENT",
+    "name": "Cenário 3: Rotação Regenerativa Resiliente ao Clima (Milho + Centeio de Cobertura -> Soja + Trigo)",
+    "crop_sequence": ["Milho", "Centeio de Cobertura", "Soja", "Trigo de Inverno"],
+    "is_current_baseline": false,
+    "agronomic_rationale": "Integração contínua de raízes vivas e cobertura perene/semi-perene. O centeio cobre o solo no inverno e sequestra nitrato residual; o trigo diversifica a rotação com receita adicional e estresse térmico reduzido.",
+    "metrics": {
+      "productivity_index": 94.2,
+      "estimated_grain_yield_t_ha_yr": 11.6,
+      "water_demand_mm_yr": 580.0,
+      "water_use_efficiency_kg_m3": 2.15,
+      "climate_risk_score_100": 22.0,
+      "soil_erosion_rate_t_ha_yr": 1.8,
+      "soil_organic_matter_trend_pct_10yr": +8.5,
+      "synthetic_n_fertilizer_kg_ha_yr": 85.0,
+      "bare_soil_days_per_year": 38,
+      "disease_pest_pressure_score_100": 20.0
+    },
+    "nasa_data_evidence": {
+      "smap_rootzone_observation": "Infiltração de água 42% mais rápida medida após eventos extremos de chuva do GPM IMERG, com retenção de umidade SMAP sm_rootzone superior durante veranicos de agosto.",
+      "modis_ndvi_profile": "NDVI mantido acima de 0.35 inclusive durante o final do outono e início da primavera com a biomassa do centeio.",
+      "ecostress_water_deficit": "Menor estresse térmico na superfície do solo devido ao efeito de albedo e cobertura vegetal (temperatura do solo MODIS/SMAP 3.2°C menor em dias de calor extremo)."
+    },
+    "benefits": [
+      "Redução de 84% na taxa de erosão laminar do solo",
+      "Sequestro de até 1.8 t CO2e/ha/ano no solo (aumento de MOS e fertilidade biológica)",
+      "Supressão natural de plantas daninhas resistentes a herbicidas por efeito alelopático",
+      "Máxima pontuação na fronteira multiobjetivo de Pareto (Resiliência x Produtividade x Conservação)"
+    ],
+    "limitations_and_risks": [
+      "Exige manejo rigoroso da dessecação do centeio para evitar competição hídrica se a primavera for muito seca",
+      "Requer investimento inicial em semeadora direta ou adaptação de maquinário para alto volume de palha"
+    ],
+    "local_validation_needs": "Acompanhamento em tempo real da umidade de solo (SMAP L4) no início da primavera para determinar a data exata de terminação da cultura de cobertura."
+  }
+]
