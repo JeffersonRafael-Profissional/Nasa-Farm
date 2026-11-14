@@ -159,18 +159,41 @@
       <!-- Right: Pareto Multi-Objective Radar Chart & Diagnosis -->
       <div class="lg:col-span-8 bg-slate-950/60 border border-slate-800 rounded-xl p-6 flex flex-col justify-between">
         <div>
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
-              <h2 class="font-semibold text-base text-white flex items-center gap-2">
-                <i class="fa-solid fa-chart-radar text-emerald-400"></i> Trade-offs Multiobjetivo (Fronteira de Pareto)
-              </h2>
-              <p class="text-xs text-slate-400">Comparação das 3 estratégias de rotação em 5 dimensões agroambientais.</p>
+              <div class="flex items-center gap-2">
+                <h2 class="font-semibold text-base text-white flex items-center gap-2">
+                  <i class="fa-solid fa-chart-radar text-emerald-400"></i> Trade-offs Multiobjetivo (Fronteira de Pareto)
+                </h2>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono animate-pulse">● Ajuste em Tempo Real</span>
+              </div>
+              <p class="text-xs text-slate-400">Visualização dinâmica de como suas prioridades moldam o equilíbrio da rotação.</p>
             </div>
-            <span class="text-xs bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-slate-300">Escala 0-100</span>
+            <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 p-1 rounded-lg text-xs self-start sm:self-auto">
+              <button id="btn-mode-weighted" class="px-2.5 py-1 rounded bg-blue-600 text-white font-medium transition text-[11px]">
+                Impacto das Prioridades
+              </button>
+              <button id="btn-mode-absolute" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition text-[11px]">
+                Notas Absolutas
+              </button>
+            </div>
           </div>
 
-          <div class="h-72 w-full flex items-center justify-center">
-            <canvas id="radarChart"></canvas>
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <div class="md:col-span-8 h-72 w-full flex items-center justify-center">
+              <canvas id="radarChart"></canvas>
+            </div>
+
+            <!-- Dynamic Live Pareto Score Ranking Bars -->
+            <div class="md:col-span-4 bg-slate-900/80 border border-slate-800/80 rounded-lg p-3 space-y-3 text-xs">
+              <div class="font-semibold text-slate-200 flex items-center justify-between">
+                <span>Score Ponderado de Pareto</span>
+                <span class="text-[10px] text-slate-400">(0-100)</span>
+              </div>
+              <div id="pareto-ranking-bars" class="space-y-2.5">
+                <!-- Dynamically filled with animated progress bars -->
+              </div>
+            </div>
           </div>
         </div>
 

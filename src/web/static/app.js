@@ -1,15 +1,42 @@
 // Smart Rotation Engine - Interactive Frontend Logic
 let radarChartInstance = null;
 let timelineChartInstance = null;
+let latestEvaluationData = null;
+let currentRadarMode = "weighted"; // 'weighted' or 'absolute'
+let recalculateTimeout = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   setupSliders();
+  setupModeButtons();
   loadInitialData();
 
   document.getElementById("btn-recalculate").addEventListener("click", () => {
     recalculateEvaluation();
   });
 });
+
+function setupModeButtons() {
+  const btnWeighted = document.getElementById("btn-mode-weighted");
+  const btnAbsolute = document.getElementById("btn-mode-absolute");
+
+  btnWeighted.addEventListener("click", () => {
+    currentRadarMode = "weighted";
+    btnWeighted.className = "px-2.5 py-1 rounded bg-blue-600 text-white font-medium transition text-[11px]";
+    btnAbsolute.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white transition text-[11px]";
+    if (latestEvaluationData) {
+      updateRadarChart(latestEvaluationData.scenario_ranking);
+    }
+  });
+
+  btnAbsolute.addEventListener("click", () => {
+    currentRadarMode = "absolute";
+    btnAbsolute.className = "px-2.5 py-1 rounded bg-blue-600 text-white font-medium transition text-[11px]";
+    btnWeighted.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white transition text-[11px]";
+    if (latestEvaluationData) {
+      updateRadarChart(latestEvaluationData.scenario_ranking);
+    }
+  });
+}
 
 function setupSliders() {
   const sliders = [
@@ -22,9 +49,24 @@ function setupSliders() {
   sliders.forEach(s => {
     const el = document.getElementById(s.id);
     const lbl = document.getElementById(s.label);
+    
+    // Live update while sliding
     el.addEventListener("input", () => {
       lbl.innerText = `${el.value}%`;
+      // Debounce slightly to make dragging smooth
+      if (recalculateTimeout) clearTimeout(recalculateTimeout);
+      recalculateTimeout = setTimeout(() => {
+        recalculateEvaluation();
+      }, 40);
     });
+  });
+
+  // Checkboxes also trigger live update
+  ["chk-drill", "chk-cornhead", "chk-grainhead"].forEach(chkId => {
+    const chk = document.getElementById(chkId);
+    if (chk) {
+      chk.addEventListener("change", () => recalculateEvaluation());
+    }
   });
 }
 
@@ -151,12 +193,16 @@ async function recalculateEvaluation() {
   });
 
   const data = await res.json();
+  latestEvaluationData = data;
   renderResults(data);
 }
 
 function renderResults(data) {
   // Update Radar Chart
   updateRadarChart(data.scenario_ranking);
+
+  // Update Pareto Ranking Bars
+  updateParetoRankingBars(data.scenario_ranking);
 
   // Update KPI Cards
   const top = data.recommended_strategy;
@@ -254,6 +300,37 @@ function renderResults(data) {
   });
 }
 
+function updateParetoRankingBars(scenarios) {
+  const container = document.getElementById("pareto-ranking-bars");
+  if (!container) return;
+  container.innerHTML = "";
+
+  const barColors = [
+    { bg: "bg-emerald-500", text: "text-emerald-400" },
+    { bg: "bg-blue-500", text: "text-blue-400" },
+    { bg: "bg-rose-500", text: "text-rose-400" }
+  ];
+
+  scenarios.forEach((s, idx) => {
+    const color = barColors[idx % 3];
+    const shortName = s.name.split(":")[0];
+    const score = s.composite_score;
+
+    const row = document.createElement("div");
+    row.className = "space-y-1";
+    row.innerHTML = `
+      <div class="flex justify-between text-[11px]">
+        <span class="text-slate-300 font-medium truncate max-w-[140px]">${shortName}</span>
+        <span class="font-bold ${color.text}">${score} pts</span>
+      </div>
+      <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+        <div class="${color.bg} h-2 rounded-full transition-all duration-300 ease-out" style="width: ${score}%"></div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
 function updateRadarChart(scenarios) {
   const ctx = document.getElementById("radarChart").getContext("2d");
 
@@ -263,20 +340,51 @@ function updateRadarChart(scenarios) {
     { border: "#f87171", bg: "rgba(248, 113, 113, 0.15)" }  // Red
   ];
 
-  const datasets = scenarios.map((s, idx) => ({
-    label: s.name.split(":")[0],
+  // Depending on selected mode (weighted vs absolute)
+  const isWeighted = currentRadarMode === "weighted";
+
+  const datasets = scenarios.map((s, idx) => {
+    const scores = isWeighted && s.weighted_scores ? s.weighted_scores : s.scores;
+    return {
+      label: s.name.split(":")[0],
+      data: [
+        scores.yield,
+        scores.water_efficiency,
+        scores.climate_resilience,
+        scores.soil_health,
+        scores.economics
+      ],
+      borderColor: colors[idx % 3].border,
+      backgroundColor: colors[idx % 3].bg,
+      borderWidth: idx === 0 ? 3 : 1.5,
+      pointRadius: idx === 0 ? 3 : 2
+    };
+  });
+
+  // Add the farmer's priority polygon layer
+  const yieldWeight = parseFloat(document.getElementById("slider-yield").value);
+  const waterWeight = parseFloat(document.getElementById("slider-water").value);
+  const soilWeight = parseFloat(document.getElementById("slider-soil").value);
+  const costWeight = parseFloat(document.getElementById("slider-cost").value);
+  const climateWeight = (waterWeight + soilWeight) / 2;
+
+  // Scale weights to 0-100 radar domain
+  datasets.push({
+    label: "🎯 Perfil de Prioridades",
     data: [
-      s.scores.yield,
-      s.scores.water_efficiency,
-      s.scores.climate_resilience,
-      s.scores.soil_health,
-      s.scores.economics
+      yieldWeight * 1.5,
+      waterWeight * 1.5,
+      climateWeight * 1.5,
+      soilWeight * 1.5,
+      costWeight * 1.5
     ],
-    borderColor: colors[idx % 3].border,
-    backgroundColor: colors[idx % 3].bg,
+    borderColor: "#fbbf24",
+    backgroundColor: "rgba(251, 191, 36, 0.08)",
     borderWidth: 2,
-    pointRadius: 3
-  }));
+    borderDash: [4, 4],
+    pointRadius: 3,
+    pointBackgroundColor: "#fbbf24"
+  });
 
   if (radarChartInstance) {
     radarChartInstance.data.datasets = datasets;
@@ -291,6 +399,7 @@ function updateRadarChart(scenarios) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: { duration: 250 },
         scales: {
           r: {
             min: 0,
@@ -299,7 +408,7 @@ function updateRadarChart(scenarios) {
             grid: { color: "rgba(255, 255, 255, 0.08)" },
             pointLabels: {
               color: "#cbd5e1",
-              font: { size: 11, weight: "bold" }
+              font: { size: 10, weight: "bold" }
             },
             ticks: {
               color: "#64748b",
@@ -311,7 +420,7 @@ function updateRadarChart(scenarios) {
         plugins: {
           legend: {
             position: "bottom",
-            labels: { color: "#e2e8f0", font: { size: 11 }, boxWidth: 12 }
+            labels: { color: "#e2e8f0", font: { size: 10 }, boxWidth: 10 }
           }
         }
       }

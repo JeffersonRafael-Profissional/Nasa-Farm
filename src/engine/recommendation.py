@@ -47,6 +47,15 @@ class SmartRotationEngine:
         # Baseline reference
         baseline = next((s for s in ranked_scenarios if s["is_current_baseline"]), ranked_scenarios[-1])
 
+        # Normalized weights around neutral baseline (0.25 each = 1.0 multiplier)
+        total_w = constraints.priority_yield_weight + constraints.priority_water_weight + constraints.priority_soil_weight + constraints.priority_cost_weight
+        if total_w <= 0:
+            total_w = 1.0
+        norm_wy = (constraints.priority_yield_weight / total_w) * 4.0
+        norm_ww = (constraints.priority_water_weight / total_w) * 4.0
+        norm_ws = (constraints.priority_soil_weight / total_w) * 4.0
+        norm_wc = (constraints.priority_cost_weight / total_w) * 4.0
+
         # Pareto comparison against baseline
         comparison_table = []
         for s in ranked_scenarios:
@@ -62,6 +71,13 @@ class SmartRotationEngine:
                     "soil_health": s["soil_score"],
                     "economics": s["economic_score"]
                 },
+                "weighted_scores": {
+                    "yield": round(min(100.0, s["yield_score"] * norm_wy), 1),
+                    "water_efficiency": round(min(100.0, s["water_score"] * norm_ww), 1),
+                    "climate_resilience": round(min(100.0, s["resilience_score"] * ((norm_ww + norm_ws) / 2.0)), 1),
+                    "soil_health": round(min(100.0, s["soil_score"] * norm_ws), 1),
+                    "economics": round(min(100.0, s["economic_score"] * norm_wc), 1)
+                },
                 "dominates_baseline": dom["dominates_baseline"],
                 "improvements": dom["improvements"],
                 "benefits": s["benefits"],
@@ -75,6 +91,12 @@ class SmartRotationEngine:
         # 4. Synthesize final decision-support package
         return {
             "status": "success",
+            "weights_used": {
+                "yield": round(constraints.priority_yield_weight * 100, 1),
+                "water": round(constraints.priority_water_weight * 100, 1),
+                "soil": round(constraints.priority_soil_weight * 100, 1),
+                "cost": round(constraints.priority_cost_weight * 100, 1)
+            },
             "study_region": {
                 "site": self.soil.site_name,
                 "soil_series": self.soil.soil_series,
