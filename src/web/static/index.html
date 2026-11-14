@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Rotation Engine | NASA Space Apps 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+  <!-- Navbar -->
+  <header class="bg-slate-950/80 backdrop-blur border-b border-slate-800 sticky top-0 z-50 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">
+          <i class="fa-solid fa-satellite"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-lg text-white">Smart Rotation Engine</h1>
+            <span class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full font-mono">NASA Space Apps 2026</span>
+          </div>
+          <p class="text-xs text-slate-400">Field Shift: Adapting Farms with NASA Earth Observations</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs">
+        <div class="bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5 flex items-center gap-2">
+          <i class="fa-solid fa-location-dot text-emerald-400"></i>
+          <div>
+            <span class="text-slate-400 block text-[10px]">REGIÃO DE ESTUDO</span>
+            <span class="font-medium text-slate-200">Ames, Iowa (Corn Belt)</span>
+          </div>
+        </div>
+        <div class="bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5 flex items-center gap-2">
+          <i class="fa-solid fa-database text-blue-400"></i>
+          <div>
+            <span class="text-slate-400 block text-[10px]">SENSORES NASA</span>
+            <span class="font-medium text-slate-200">SMAP L4 • MODIS • GPM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+        <div class="text-xs text-slate-400 font-medium mb-1">SCORE DE RESILIÊNCIA</div>
+        <div class="text-3xl font-extrabold text-emerald-400" id="kpi-resilience">93.7<span class="text-sm font-normal text-slate-500">/100</span></div>
+        <div class="text-xs text-emerald-400/80 mt-2 flex items-center gap-1">
+          <i class="fa-solid fa-arrow-trend-up"></i> +45.1 pts vs. Monocultura
+        </div>
+      </div>
+
+      <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+        <div class="text-xs text-slate-400 font-medium mb-1">EROSÃO DO SOLO</div>
+        <div class="text-3xl font-extrabold text-cyan-400" id="kpi-erosion">1.8 <span class="text-sm font-normal text-slate-500">t/ha/ano</span></div>
+        <div class="text-xs text-cyan-400/80 mt-2 flex items-center gap-1">
+          <i class="fa-solid fa-shield-halved"></i> -84% redução de perda
+        </div>
+      </div>
+
+      <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+        <div class="text-xs text-slate-400 font-medium mb-1">DIAS DE SOLO EXPOSTO</div>
+        <div class="text-3xl font-extrabold text-amber-400" id="kpi-bare-soil">38 <span class="text-sm font-normal text-slate-500">dias/ano</span></div>
+        <div class="text-xs text-amber-400/80 mt-2 flex items-center gap-1">
+          <i class="fa-solid fa-leaf"></i> -157 dias sem cobertura
+        </div>
+      </div>
+
+      <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+        <div class="text-xs text-slate-400 font-medium mb-1">ECONOMIA DE ADUBO N</div>
+        <div class="text-3xl font-extrabold text-indigo-400" id="kpi-savings">135 <span class="text-sm font-normal text-slate-500">kg N/ha</span></div>
+        <div class="text-xs text-indigo-400/80 mt-2 flex items-center gap-1">
+          <i class="fa-solid fa-piggy-bank"></i> ~\$148/ha economizados
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Workspace Grid: Controls + Radar Chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left: Farmer Controls & Constraints -->
+      <div class="lg:col-span-4 bg-slate-950/60 border border-slate-800 rounded-xl p-6 space-y-6">
+        <div>
+          <h2 class="font-semibold text-base text-white flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-blue-400"></i> Prioridades do Produtor
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Ajuste os pesos da Otimização Multiobjetivo de Pareto em tempo real.</p>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <div class="flex justify-between mb-1 font-medium">
+              <span class="text-slate-300">Produtividade / Rendimento</span>
+              <span class="text-blue-400" id="val-yield">35%</span>
+            </div>
+            <input type="range" id="slider-yield" min="5" max="70" value="35" class="w-full accent-blue-500 bg-slate-800 rounded h-1.5">
+          </div>
+
+          <div>
+            <div class="flex justify-between mb-1 font-medium">
+              <span class="text-slate-300">Eficiência Hídrica / Seca</span>
+              <span class="text-cyan-400" id="val-water">20%</span>
+            </div>
+            <input type="range" id="slider-water" min="5" max="70" value="20" class="w-full accent-cyan-500 bg-slate-800 rounded h-1.5">
+          </div>
+
+          <div>
+            <div class="flex justify-between mb-1 font-medium">
+              <span class="text-slate-300">Conservação e Saúde do Solo</span>
+              <span class="text-emerald-400" id="val-soil">30%</span>
+            </div>
+            <input type="range" id="slider-soil" min="5" max="70" value="30" class="w-full accent-emerald-500 bg-slate-800 rounded h-1.5">
+          </div>
+
+          <div>
+            <div class="flex justify-between mb-1 font-medium">
+              <span class="text-slate-300">Redução de Custos / Fertilizantes</span>
+              <span class="text-indigo-400" id="val-cost">15%</span>
+            </div>
+            <input type="range" id="slider-cost" min="5" max="70" value="15" class="w-full accent-indigo-500 bg-slate-800 rounded h-1.5">
+          </div>
+        </div>
+
+        <hr class="border-slate-800">
+
+        <!-- Farm Machinery Constraints -->
+        <div>
+          <h3 class="font-semibold text-xs text-slate-300 uppercase tracking-wider mb-3">Restrições de Maquinário</h3>
+          <div class="space-y-2 text-xs text-slate-300">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="chk-drill" checked class="rounded border-slate-700 bg-slate-800 text-blue-600 accent-blue-500">
+              <span>Possui Semeadora Direta (No-till drill)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="chk-cornhead" checked class="rounded border-slate-700 bg-slate-800 text-blue-600 accent-blue-500">
+              <span>Plataforma de Milho</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="chk-grainhead" checked class="rounded border-slate-700 bg-slate-800 text-blue-600 accent-blue-500">
+              <span>Plataforma de Grãos Pequenos (Soja/Trigo)</span>
+            </label>
+          </div>
+        </div>
+
+        <button id="btn-recalculate" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 px-4 rounded-lg transition text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
+          <i class="fa-solid fa-rotate"></i> Recalcular Fronteira de Pareto
+        </button>
+      </div>
+
+      <!-- Right: Pareto Multi-Objective Radar Chart & Diagnosis -->
+      <div class="lg:col-span-8 bg-slate-950/60 border border-slate-800 rounded-xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="font-semibold text-base text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-radar text-emerald-400"></i> Trade-offs Multiobjetivo (Fronteira de Pareto)
+              </h2>
+              <p class="text-xs text-slate-400">Comparação das 3 estratégias de rotação em 5 dimensões agroambientais.</p>
+            </div>
+            <span class="text-xs bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-slate-300">Escala 0-100</span>
+          </div>
+
+          <div class="h-72 w-full flex items-center justify-center">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Diagnostic callout -->
+        <div class="mt-4 bg-blue-950/30 border border-blue-800/40 rounded-lg p-3 text-xs text-blue-200 flex items-start gap-3">
+          <i class="fa-solid fa-circle-info text-blue-400 text-sm mt-0.5"></i>
+          <div>
+            <strong class="text-white block mb-0.5">Diagnóstico Espaço-Temporal da NASA:</strong>
+            <span id="diagnostic-text">O talhão passa ~195 dias com solo desprotegido na rotação de milho contínuo, coincidindo com chuvas intensas de outono e primavera que causam lixiviação de nitratos e erosão laminar detectada pela reflectância de satélite.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Multi-Sensor Synchronized Timeline Chart (NASA SMAP + MODIS + GPM) -->
+    <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-6 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="font-semibold text-base text-white flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-cyan-400"></i> Série Temporal Harmonizada NASA (Ciclo Safra Anual)
+          </h2>
+          <p class="text-xs text-slate-400">Cruzamento de Umidade Radicular (SMAP L4), Vigor Vegetal (MODIS NDVI) e Chuvas (GPM IMERG).</p>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400 inline-block"></span> SMAP Umidade Raiz</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span> MODIS NDVI</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> GPM Precipitação</span>
+        </div>
+      </div>
+
+      <div class="h-64 w-full">
+        <canvas id="timelineChart"></canvas>
+      </div>
+    </div>
+
+    <!-- 3 Scenarios Comparison Cards (Required by NASA Challenge) -->
+    <div>
+      <div class="mb-4">
+        <h2 class="font-bold text-lg text-white flex items-center gap-2">
+          <i class="fa-solid fa-scale-balanced text-amber-400"></i> Avaliação das 3 Estratégias de Rotação
+        </h2>
+        <p class="text-xs text-slate-400">Detalhamento agronômico, benefícios, limitações e riscos que exigem validação local.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="scenarios-container">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Actionable Seasonal Timeline for Top Strategy -->
+    <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-6">
+      <h2 class="font-semibold text-base text-white flex items-center gap-2 mb-2">
+        <i class="fa-solid fa-calendar-check text-indigo-400"></i> Cronograma de Ações Agronômicas Recomendadas
+      </h2>
+      <p class="text-xs text-slate-400 mb-6">Guia prático de manejo para a estratégia regenerativa vencedora em Ames, Iowa.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="timeline-actions">
+        <!-- Dynamic timeline cards -->
+      </div>
+    </div>
+
+    <!-- Official Decision Support Disclaimer -->
+    <div class="bg-amber-950/20 border border-amber-600/30 rounded-xl p-4 text-xs text-amber-300 flex items-start gap-3">
+      <i class="fa-solid fa-triangle-exclamation text-amber-400 text-base mt-0.5"></i>
+      <div>
+        <strong class="font-semibold block mb-0.5">Aviso Importante de Suporte à Decisão:</strong>
+        Esta ferramenta apoia — mas não substitui — a decisão humana e a consultoria agronômica local. As estimativas baseiam-se em observações orbitais da NASA e modelos ecofisiológicos globais. Recomenda-se realizar amostragem laboratorial de solo e consultar a extensão universitária local para ajustes operacionais finos.
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 text-center py-6 text-xs text-slate-500">
+    NASA Space Apps Challenge 2026 • Equipe Smart Rotation Engine • Repositório: <a href="https://github.com/JeffersonRafael-Profissional/Nasa-Farm" target="_blank" class="text-blue-400 hover:underline">JeffersonRafael-Profissional/Nasa-Farm</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

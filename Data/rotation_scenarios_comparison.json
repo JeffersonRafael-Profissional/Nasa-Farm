@@ -46,7 +46,7 @@
       "water_use_efficiency_kg_m3": 1.85,
       "climate_risk_score_100": 48.0,
       "soil_erosion_rate_t_ha_yr": 7.4,
-      "soil_organic_matter_trend_pct_10yr": +0.8,
+      "soil_organic_matter_trend_pct_10yr": 0.8,
       "synthetic_n_fertilizer_kg_ha_yr": 130.0,
       "bare_soil_days_per_year": 170,
       "disease_pest_pressure_score_100": 45.0
@@ -80,7 +80,7 @@
       "water_use_efficiency_kg_m3": 2.15,
       "climate_risk_score_100": 22.0,
       "soil_erosion_rate_t_ha_yr": 1.8,
-      "soil_organic_matter_trend_pct_10yr": +8.5,
+      "soil_organic_matter_trend_pct_10yr": 8.5,
       "synthetic_n_fertilizer_kg_ha_yr": 85.0,
       "bare_soil_days_per_year": 38,
       "disease_pest_pressure_score_100": 20.0
