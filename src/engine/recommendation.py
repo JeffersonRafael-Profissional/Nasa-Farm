@@ -88,6 +88,25 @@ class SmartRotationEngine:
         # 3. Top recommended scenario
         top_scenario = ranked_scenarios[0]
 
+        # Scenario-specific actionable timelines
+        scenario_timelines = {
+            "SCENARIO_C_CLIMATE_RESILIENT": [
+                {"window": "Setembro (Colheita de Milho)", "action": "Semear Centeio de Inverno aéreo ou pós-colheita para criar raiz viva."},
+                {"window": "Abril (Primavera)", "action": "Dessecar centeio 10-14 dias antes de semear Soja para preservar umidade do SMAP."},
+                {"window": "Outubro (Pós-Soja)", "action": "Semear Trigo de Inverno para cobrir o solo e quebrar ciclo de nematoides."}
+            ],
+            "SCENARIO_B_STANDARD_ROTATION": [
+                {"window": "Outubro (Pós-Soja)", "action": "Mapear áreas com alta palhada de soja e verificar umidade residual no SMAP L4."},
+                {"window": "Março (Pré-Plantio)", "action": "Amostragem de solo para creditar os ~40 kg N/ha deixados pela soja."},
+                {"window": "Maio (Semeadura de Milho)", "action": "Semear milho aplicando 130 kg N/ha (redução de 90 kg vs milho contínuo)."}
+            ],
+            "SCENARIO_A_MONOCULTURE": [
+                {"window": "Outubro (Colheita de Milho)", "action": "Triturar e incorporar restolho de milho pesado para acelerar decomposição."},
+                {"window": "Novembro (Outono)", "action": "Aplicação pesada de Amônia Anidra outonal com inibidor de nitrificação."},
+                {"window": "Abril (Plantio)", "action": "Adubação pesada de arranque (220 kg N/ha) e tratamento fitossanitário contra lagartas."}
+            ]
+        }
+
         # 4. Synthesize final decision-support package
         return {
             "status": "success",
@@ -121,15 +140,10 @@ class SmartRotationEngine:
                 "name": top_scenario["name"],
                 "composite_score": top_scenario["composite_pareto_score"],
                 "why_recommended": (
-                    f"Apresenta a maior resiliência global ({top_scenario['resilience_score']}/100) "
-                    f"e conservação do solo ({top_scenario['soil_score']}/100), reduzindo a erosão "
-                    f"de 11.2 t/ha para 1.8 t/ha e economizando adubação nitrogenada com fixação biológica e biomassa."
+                    f"Apresenta a maior pontuação global ({top_scenario['composite_pareto_score']}/100) "
+                    f"adequada às suas prioridades atuais e maquinário disponível."
                 ),
-                "actionable_timeline": [
-                    {"window": "Setembro (Colheita de Milho)", "action": "Semear Centeio de Inverno aéreo ou pós-colheita."},
-                    {"window": "Abril (Primavera)", "action": "Dessecar centeio 10-14 dias antes de semear Soja para preservar umidade do SMAP."},
-                    {"window": "Outubro (Pós-Soja)", "action": "Semear Trigo de Inverno para manter raiz viva e quebrar ciclo de nematoides."}
-                ]
+                "actionable_timeline": scenario_timelines.get(top_scenario["scenario_id"], scenario_timelines["SCENARIO_C_CLIMATE_RESILIENT"])
             },
             "nasa_data_attribution": {
                 "smap_l4": "Monitoramento de umidade superficial (0-5cm) e radicular (0-100cm) para guiar dessecação e plantio.",

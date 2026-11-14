@@ -4,6 +4,7 @@ let timelineChartInstance = null;
 let latestEvaluationData = null;
 let currentRadarMode = "weighted"; // 'weighted' or 'absolute'
 let recalculateTimeout = null;
+let rawSatelliteSeries = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   setupSliders();
@@ -50,18 +51,17 @@ function setupSliders() {
     const el = document.getElementById(s.id);
     const lbl = document.getElementById(s.label);
     
-    // Live update while sliding
+    // Live reactive update as the slider is dragged
     el.addEventListener("input", () => {
       lbl.innerText = `${el.value}%`;
-      // Debounce slightly to make dragging smooth
       if (recalculateTimeout) clearTimeout(recalculateTimeout);
       recalculateTimeout = setTimeout(() => {
         recalculateEvaluation();
-      }, 40);
+      }, 30);
     });
   });
 
-  // Checkboxes also trigger live update
+  // Checkboxes trigger live update
   ["chk-drill", "chk-cornhead", "chk-grainhead"].forEach(chkId => {
     const chk = document.getElementById(chkId);
     if (chk) {
@@ -82,12 +82,15 @@ async function loadInitialData() {
 async function loadSatelliteTimeline() {
   const res = await fetch("/api/satellite-series");
   const data = await res.json();
-  const series = data.series || [];
+  rawSatelliteSeries = data.series || [];
 
-  const labels = series.map(d => d.period_start.slice(5)); // MM-DD
-  const smapMoisture = series.map(d => d.smap_sm_rootzone);
-  const modisNdvi = series.map(d => d.modis_ndvi);
-  const gpmRain = series.map(d => d.gpm_precipitation_mm);
+  const labels = rawSatelliteSeries.map(d => d.period_start.slice(5)); // MM-DD
+  const smapMoisture = rawSatelliteSeries.map(d => d.smap_sm_rootzone);
+  const modisNdvi = rawSatelliteSeries.map(d => d.modis_ndvi);
+  const gpmRain = rawSatelliteSeries.map(d => d.gpm_precipitation_mm);
+
+  // Initial projected NDVI curve (starts matching baseline)
+  const projectedNdvi = [...modisNdvi];
 
   const ctx = document.getElementById("timelineChart").getContext("2d");
   timelineChartInstance = new Chart(ctx, {
@@ -99,28 +102,38 @@ async function loadSatelliteTimeline() {
           label: "SMAP Umidade Raiz (m³/m³)",
           data: smapMoisture,
           borderColor: "#22d3ee",
-          backgroundColor: "rgba(34, 211, 238, 0.1)",
+          backgroundColor: "rgba(34, 211, 238, 0.08)",
           yAxisID: "y-moisture",
           tension: 0.3,
           borderWidth: 2,
           pointRadius: 2
         },
         {
-          label: "MODIS NDVI (Vigor Vegetal)",
+          label: "MODIS NDVI (Observado / Atual)",
           data: modisNdvi,
           borderColor: "#34d399",
-          backgroundColor: "rgba(52, 211, 153, 0.15)",
+          backgroundColor: "rgba(52, 211, 153, 0.1)",
           fill: true,
           yAxisID: "y-ndvi",
           tension: 0.3,
-          borderWidth: 2,
+          borderWidth: 1.5,
           pointRadius: 2
+        },
+        {
+          label: "NDVI Projetado da Rotação Recomendada",
+          data: projectedNdvi,
+          borderColor: "#fbbf24",
+          borderWidth: 2.5,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          yAxisID: "y-ndvi",
+          tension: 0.3
         },
         {
           label: "GPM Precipitação (mm/16d)",
           data: gpmRain,
           type: "bar",
-          backgroundColor: "rgba(59, 130, 246, 0.5)",
+          backgroundColor: "rgba(59, 130, 246, 0.4)",
           yAxisID: "y-rain",
           borderRadius: 4
         }
@@ -149,7 +162,7 @@ async function loadSatelliteTimeline() {
           position: "right",
           min: 0,
           max: 1.0,
-          title: { display: true, text: "NDVI", color: "#34d399", font: { size: 10 } },
+          title: { display: true, text: "NDVI (0-1)", color: "#34d399", font: { size: 10 } },
           ticks: { color: "#94a3b8" },
           grid: { drawOnChartArea: false }
         },
@@ -198,17 +211,33 @@ async function recalculateEvaluation() {
 }
 
 function renderResults(data) {
-  // Update Radar Chart
+  const top = data.recommended_strategy;
+
+  // 1. Update Radar Chart
   updateRadarChart(data.scenario_ranking);
 
-  // Update Pareto Ranking Bars
+  // 2. Update Pareto Ranking Bars
   updateParetoRankingBars(data.scenario_ranking);
 
-  // Update KPI Cards
-  const top = data.recommended_strategy;
-  document.getElementById("kpi-resilience").innerHTML = `${top.composite_score}<span class="text-sm font-normal text-slate-500">/100</span>`;
+  // 3. Update Satellite Projected NDVI curve based on winning scenario
+  updateProjectedTimeline(top.scenario_id);
 
-  // Render Scenario Cards
+  // 4. Update Dynamic KPI Cards based on winning scenario
+  updateKpiCards(top.scenario_id, top.composite_score);
+
+  // 5. Update Diagnostic Callout text
+  const diagText = document.getElementById("diagnostic-text");
+  if (diagText) {
+    if (top.scenario_id === "SCENARIO_C_CLIMATE_RESILIENT") {
+      diagText.innerText = `O algoritmo selecionou a Rotação Regenerativa. A biomassa do Centeio de Inverno e Trigo elimina 157 dias de solo desprotegido detectados pelo MODIS e aumenta a retenção de umidade radicular no SMAP em veranicos de verão.`;
+    } else if (top.scenario_id === "SCENARIO_B_STANDARD_ROTATION") {
+      diagText.innerText = `O algoritmo selecionou a Rotação Padrão Milho-Soja. Ela equilibra a safra com a fixação biológica da soja (+40 kg N/ha), porém ainda mantém ~170 dias com resíduo leve suscetível à erosão na primavera.`;
+    } else {
+      diagText.innerText = `O algoritmo selecionou Milho Contínuo (prioridade exclusiva para volume comercial imediato). Atenção: a reflectância de satélite indica ~195 dias de solo exposto e alta necessidade de fertilizantes nitrogenados (220 kg N/ha).`;
+    }
+  }
+
+  // 6. Render Scenario Cards
   const container = document.getElementById("scenarios-container");
   container.innerHTML = "";
 
@@ -229,7 +258,7 @@ function renderResults(data) {
               ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
               : "bg-slate-800 text-slate-400"
           }">
-            ${isTop ? "★ ÓTIMO DE PARETO" : (s.scenario_id.includes("A") ? "LINHA DE BASE" : "PADRÃO")}
+            ${isTop ? "★ ÓTIMO DE PARETO ATUAL" : (s.scenario_id.includes("A") ? "LINHA DE BASE" : "ALTERNATIVA")}
           </span>
           <div class="text-right">
             <span class="text-xs text-slate-400 block text-[10px]">SCORE GLOBAL</span>
@@ -253,7 +282,7 @@ function renderResults(data) {
             <span class="font-medium">${s.scores.soil_health} pts</span>
           </div>
           <div class="flex justify-between text-slate-300">
-            <span class="text-slate-400">Economia Insumos:</span>
+            <span class="text-slate-400">Economia / Viabilidade:</span>
             <span class="font-medium">${s.scores.economics} pts</span>
           </div>
         </div>
@@ -283,10 +312,15 @@ function renderResults(data) {
     container.appendChild(card);
   });
 
-  // Render Timeline Actions
+  // 7. Render Timeline Actions based on the active winner
+  const timelineTitle = document.getElementById("timeline-title");
+  if (timelineTitle) {
+    timelineTitle.innerHTML = `<i class="fa-solid fa-calendar-check text-indigo-400"></i> Cronograma de Ações: <span class="text-emerald-400">${top.name.split(":")[0]}</span>`;
+  }
+
   const timelineContainer = document.getElementById("timeline-actions");
   timelineContainer.innerHTML = "";
-  data.recommended_strategy.actionable_timeline.forEach((item, i) => {
+  top.actionable_timeline.forEach((item, i) => {
     const el = document.createElement("div");
     el.className = "bg-slate-900 border border-slate-800 rounded-lg p-4 relative";
     el.innerHTML = `
@@ -298,6 +332,61 @@ function renderResults(data) {
     `;
     timelineContainer.appendChild(el);
   });
+}
+
+function updateProjectedTimeline(scenarioId) {
+  if (!timelineChartInstance || !rawSatelliteSeries.length) return;
+
+  const baselineNdvi = rawSatelliteSeries.map(d => d.modis_ndvi);
+
+  const simulated = baselineNdvi.map((ndvi, idx) => {
+    const doy = rawSatelliteSeries[idx].doy_mid;
+    if (scenarioId === "SCENARIO_C_CLIMATE_RESILIENT") {
+      // Cover crop (Cereal Rye / Winter Wheat) maintains green cover (NDVI ~0.42)
+      // during early spring (DOY < 120) and autumn/winter (DOY > 280)
+      if (doy < 120 || doy > 280) {
+        return Math.max(ndvi, 0.42);
+      }
+      return ndvi;
+    } else if (scenarioId === "SCENARIO_B_STANDARD_ROTATION") {
+      // Slight residue, but remains bare in late winter
+      if (doy > 280 && doy < 330) {
+        return Math.max(ndvi, 0.24);
+      }
+      return ndvi;
+    } else {
+      // Monoculture: standard bare soil
+      return ndvi;
+    }
+  });
+
+  timelineChartInstance.data.datasets[2].data = simulated;
+  timelineChartInstance.update();
+}
+
+function updateKpiCards(scenarioId, score) {
+  const elResilience = document.getElementById("kpi-resilience");
+  const elErosion = document.getElementById("kpi-erosion");
+  const elBareSoil = document.getElementById("kpi-bare-soil");
+  const elSavings = document.getElementById("kpi-savings");
+
+  if (elResilience) {
+    elResilience.innerHTML = `${score}<span class="text-sm font-normal text-slate-500">/100</span>`;
+  }
+
+  if (scenarioId === "SCENARIO_C_CLIMATE_RESILIENT") {
+    if (elErosion) elErosion.innerHTML = `1.8 <span class="text-sm font-normal text-slate-500">t/ha/ano</span>`;
+    if (elBareSoil) elBareSoil.innerHTML = `38 <span class="text-sm font-normal text-slate-500">dias/ano</span>`;
+    if (elSavings) elSavings.innerHTML = `135 <span class="text-sm font-normal text-slate-500">kg N/ha</span>`;
+  } else if (scenarioId === "SCENARIO_B_STANDARD_ROTATION") {
+    if (elErosion) elErosion.innerHTML = `7.4 <span class="text-sm font-normal text-slate-500">t/ha/ano</span>`;
+    if (elBareSoil) elBareSoil.innerHTML = `170 <span class="text-sm font-normal text-slate-500">dias/ano</span>`;
+    if (elSavings) elSavings.innerHTML = `90 <span class="text-sm font-normal text-slate-500">kg N/ha</span>`;
+  } else {
+    if (elErosion) elErosion.innerHTML = `11.2 <span class="text-sm font-normal text-slate-500">t/ha/ano</span>`;
+    if (elBareSoil) elBareSoil.innerHTML = `195 <span class="text-sm font-normal text-slate-500">dias/ano</span>`;
+    if (elSavings) elSavings.innerHTML = `0 <span class="text-sm font-normal text-slate-500">kg N/ha</span>`;
+  }
 }
 
 function updateParetoRankingBars(scenarios) {
@@ -340,7 +429,6 @@ function updateRadarChart(scenarios) {
     { border: "#f87171", bg: "rgba(248, 113, 113, 0.15)" }  // Red
   ];
 
-  // Depending on selected mode (weighted vs absolute)
   const isWeighted = currentRadarMode === "weighted";
 
   const datasets = scenarios.map((s, idx) => {
@@ -361,14 +449,13 @@ function updateRadarChart(scenarios) {
     };
   });
 
-  // Add the farmer's priority polygon layer
+  // Farmer's priority polygon layer
   const yieldWeight = parseFloat(document.getElementById("slider-yield").value);
   const waterWeight = parseFloat(document.getElementById("slider-water").value);
   const soilWeight = parseFloat(document.getElementById("slider-soil").value);
   const costWeight = parseFloat(document.getElementById("slider-cost").value);
   const climateWeight = (waterWeight + soilWeight) / 2;
 
-  // Scale weights to 0-100 radar domain
   datasets.push({
     label: "🎯 Perfil de Prioridades",
     data: [

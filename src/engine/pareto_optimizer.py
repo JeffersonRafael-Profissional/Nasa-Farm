@@ -46,6 +46,28 @@ class ParetoOptimizer:
             syn_n = m.get("synthetic_n_fertilizer_kg_ha_yr", 180.0)
             score_economics = max(10.0, 110.0 - (syn_n * 0.35))
 
+            # Machinery and practical operational constraints penalties
+            machinery_penalty = 0.0
+            if s["scenario_id"] == "SCENARIO_C_CLIMATE_RESILIENT":
+                # Requires no-till drill for cover crop & grain platform for wheat/soy
+                if not self.constraints.has_no_till_drill:
+                    machinery_penalty += 35.0  # Needs rental or custom contractor
+                if not self.constraints.has_combine_grain_head:
+                    machinery_penalty += 30.0
+
+            elif s["scenario_id"] == "SCENARIO_B_STANDARD_ROTATION":
+                # Requires grain platform for soybean
+                if not self.constraints.has_combine_grain_head:
+                    machinery_penalty += 35.0
+
+            elif s["scenario_id"] == "SCENARIO_A_MONOCULTURE":
+                # Requires corn head
+                if not self.constraints.has_combine_corn_head:
+                    machinery_penalty += 50.0
+
+            # Apply machinery penalty to economics and yield feasibility
+            score_economics = max(5.0, score_economics - machinery_penalty)
+
             # Weighted Pareto Composite Score based on farmer's personal priorities
             w_y = self.constraints.priority_yield_weight
             w_w = self.constraints.priority_water_weight
@@ -69,6 +91,7 @@ class ParetoOptimizer:
                 "resilience_score": round(score_resilience, 1),
                 "soil_score": round(score_soil, 1),
                 "economic_score": round(score_economics, 1),
+                "machinery_penalty": machinery_penalty,
                 "composite_pareto_score": round(composite_score, 1),
                 "raw_metrics": m,
                 "crop_sequence": s.get("crop_sequence", []),
